@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý Phát triển Đảng viên - Chi bộ HTTT</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red:       #c0392b;
+  --red-dark:  #922b21;
+  --red-light: #e74c3c;
+  --gold:      #f1c40f;
+  --gold-dark: #d4a017;
+  --gold-light:#fde68a;
+  --bg:        #f5f5f5;
+  --white:     #ffffff;
+  --gray-100:  #f8f9fa;
+  --gray-200:  #e9ecef;
+  --gray-300:  #dee2e6;
+  --gray-400:  #ced4da;
+  --gray-500:  #adb5bd;
+  --gray-600:  #6c757d;
+  --gray-700:  #495057;
+  --gray-800:  #343a40;
+  --gray-900:  #212529;
+  --success:   #27ae60;
+  --warning:   #f39c12;
+  --info:      #2980b9;
+  --danger:    #c0392b;
+  --sidebar-w: 260px;
+  --header-h:  64px;
+  --shadow:    0 2px 12px rgba(0,0,0,.12);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.18);
+  --radius:    10px;
+  --transition:0.22s ease;
+}
+html { font-size: 15px; scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  background: var(--bg);
+  color: var(--gray-800);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--gray-200); }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+
+/* ===== HEADER ===== */
+#header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--header-h);
+  background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 60%, var(--red-light) 100%);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px 0 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.25);
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-logo {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900; color: var(--red-dark);
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  flex-shrink: 0;
+}
+.header-title { color: var(--white); }
+.header-title h1 { font-size: 1.05rem; font-weight: 700; line-height: 1.2; }
+.header-title p  { font-size: 0.75rem; opacity: .85; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.header-badge {
+  background: var(--gold); color: var(--red-dark);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 0.78rem; font-weight: 700;
+}
+.btn-menu-toggle {
+  display: none; background: none; border: none;
+  color: var(--white); font-size: 1.5rem; padding: 4px;
+}
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  position: fixed; left: 0; top: var(--header-h); bottom: 0; z-index: 900;
+  width: var(--sidebar-w);
+  background: var(--gray-900);
+  overflow-y: auto;
+  transition: transform var(--transition);
+  display: flex; flex-direction: column;
+}
+#sidebar.hidden { transform: translateX(-100%); }
+.sidebar-section { padding: 8px 0; }
+.sidebar-section-title {
+  padding: 6px 18px 4px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 1.2px;
+  color: var(--gray-500); text-transform: uppercase;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 18px;
+  color: var(--gray-400);
+  cursor: pointer;
+  transition: all var(--transition);
+  border-left: 3px solid transparent;
+  font-size: 0.9rem;
+}
+.nav-item:hover { background: rgba(255,255,255,.06); color: var(--white); }
+.nav-item.active {
+  background: rgba(192,57,43,.18);
+  color: var(--gold);
+  border-left-color: var(--gold);
+  font-weight: 600;
+}
+.nav-item .nav-icon { font-size: 1.15rem; width: 22px; text-align: center; }
+.nav-item .nav-badge {
+  margin-left: auto;
+  background: var(--red); color: var(--white);
+  border-radius: 12px; padding: 1px 7px;
+  font-size: 0.7rem; font-weight: 700;
+}
+.sidebar-footer {
+  margin-top: auto; padding: 14px 18px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  font-size: 0.72rem; color: var(--gray-500);
+}
+
+/* ===== MAIN CONTENT ===== */
+#main {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--header-h);
+  padding: 24px;
+  min-height: calc(100vh - var(--header-h));
+  transition: margin-left var(--transition);
+  flex: 1;
+}
+#main.full { margin-left: 0; }
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
+}
+.page-header h2 {
+  font-size: 1.35rem; font-weight: 700;
+  color: var(--red-dark);
+  display: flex; align-items: center; gap: 8px;
+}
+.page-header p { color: var(--gray-600); font-size: 0.85rem; margin-top: 2px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 20px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 2px solid var(--gray-100);
+}
+.card-title {
+  font-size: 1rem; font-weight: 700; color: var(--gray-800);
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ===== STAT CARDS ===== */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 22px; }
+.stat-card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px 20px;
+  display: flex; align-items: center; gap: 16px;
+  border-left: 4px solid var(--red);
+  transition: transform var(--transition), box-shadow var(--transition);
+  cursor: default;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.stat-card.gold  { border-left-color: var(--gold-dark); }
+.stat-card.green { border-left-color: var(--success); }
+.stat-card.blue  { border-left-color: var(--info); }
+.stat-card.red   { border-left-color: var(--danger); }
+.stat-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; flex-shrink: 0;
+}
+.stat-icon.red-bg   { background: rgba(192,57,43,.12); }
+.stat-icon.gold-bg  { background: rgba(241,196,15,.15); }
+.stat-icon.green-bg { background: rgba(39,174,96,.12); }
+.stat-icon.blue-bg  { background: rgba(41,128,185,.12); }
+.stat-info .stat-number { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+.stat-info .stat-label  { font-size: 0.8rem; color: var(--gray-500); margin-top: 3px; }
+
+/* ===== GRID LAYOUTS ===== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 7px;
+  font-size: 0.875rem; font-weight: 600;
+  border: none; transition: all var(--transition);
+  white-space: nowrap;
+}
+.btn-sm { padding: 5px 11px; font-size: 0.8rem; border-radius: 5px; }
+.btn-lg { padding: 11px 22px; font-size: 1rem; }
+.btn-primary { background: var(--red); color: var(--white); }
+.btn-primary:hover { background: var(--red-dark); }
+.btn-success { background: var(--success); color: var(--white); }
+.btn-success:hover { background: #219150; }
+.btn-warning { background: var(--warning); color: var(--white); }
+.btn-warning:hover { background: #d68910; }
+.btn-info    { background: var(--info); color: var(--white); }
+.btn-info:hover { background: #1f6fa0; }
+.btn-danger  { background: var(--danger); color: var(--white); }
+.btn-danger:hover { background: var(--red-dark); }
+.btn-outline {
+  background: transparent; border: 1.5px solid var(--gray-300);
+  color: var(--gray-700);
+}
+.btn-outline:hover { border-color: var(--red); color: var(--red); background: rgba(192,57,43,.04); }
+.btn-gold { background: var(--gold); color: var(--red-dark); }
+.btn-gold:hover { background: var(--gold-dark); }
+
+/* ===== TABLE ===== */
+.table-wrapper { overflow-x: auto; border-radius: var(--radius); }
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+thead tr { background: linear-gradient(135deg, var(--red-dark), var(--red)); }
+thead th {
+  padding: 12px 14px; text-align: left;
+  font-size: 0.82rem; font-weight: 700;
+  color: var(--white); letter-spacing: .5px;
+  white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--gray-100); transition: background var(--transition); }
+tbody tr:hover { background: rgba(192,57,43,.04); }
+tbody td { padding: 11px 14px; font-size: 0.87rem; }
+tbody tr:last-child { border-bottom: none; }
+
+/* ===== STATUS BADGES ===== */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.badge-new      { background: #e8f4fd; color: var(--info); }
+.badge-process  { background: #fef9e7; color: #d68910; }
+.badge-done     { background: #e9f7ef; color: var(--success); }
+.badge-reject   { background: #fdedec; color: var(--danger); }
+
+/* ===== SEARCH / FILTER BAR ===== */
+.filter-bar {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 16px; align-items: center;
+}
+.filter-bar input, .filter-bar select {
+  padding: 8px 12px; border: 1.5px solid var(--gray-300);
+  border-radius: 7px; font-size: 0.875rem;
+  outline: none; transition: border-color var(--transition);
+  background: var(--white);
+}
+.filter-bar input:focus, .filter-bar select:focus { border-color: var(--red); }
+.filter-bar input { flex: 1; min-width: 180px; }
+
+/* ===== PROCESS STEPS ===== */
+.steps-container { display: flex; flex-direction: column; gap: 14px; }
+.step-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  background: var(--white); border-radius: var(--radius);
+  padding: 16px; box-shadow: var(--shadow);
+  border-left: 4px solid var(--gray-300);
+  transition: border-color var(--transition);
+}
+.step-item.done { border-left-color: var(--success); }
+.step-item.active { border-left-color: var(--gold-dark); }
+.step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1rem; flex-shrink: 0;
+  background: var(--gray-200); color: var(--gray-600);
+}
+.step-item.done  .step-num { background: var(--success); color: var(--white); }
+.step-item.active .step-num { background: var(--gold); color: var(--red-dark); }
+.step-content { flex: 1; }
+.step-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+.step-desc  { font-size: 0.82rem; color: var(--gray-500); }
+.step-forms { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.step-form-tag {
+  background: rgba(192,57,43,.08); color: var(--red);
+  border: 1px solid rgba(192,57,43,.2);
+  border-radius: 5px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600;
+}
+
+/* ===== FORMS LIST ===== */
+.forms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.form-card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px;
+  display: flex; flex-direction: column; gap: 10px;
+  border-top: 3px solid var(--red);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.form-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.form-card-num {
+  display: inline-flex; align-items: center;
+  background: var(--red); color: var(--white);
+  border-radius: 6px; padding: 3px 10px;
+  font-size: 0.75rem; font-weight: 700; width: fit-content;
+}
+.form-card-name { font-weight: 700; font-size: 0.92rem; line-height: 1.4; }
+.form-card-desc { font-size: 0.8rem; color: var(--gray-500); flex: 1; }
+.form-card-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--transition);
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--white); border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  width: 100%; max-width: 580px; max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(.95); transition: transform var(--transition);
+}
+.modal-overlay.open .modal { transform: scale(1); }
+.modal-lg { max-width: 820px; }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px; border-bottom: 2px solid var(--gray-100);
+  position: sticky; top: 0; background: var(--white); z-index: 1;
+}
+.modal-header h3 {
+  font-size: 1.05rem; font-weight: 700; color: var(--red-dark);
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-close {
+  background: none; border: none; font-size: 1.4rem;
+  color: var(--gray-500); line-height: 1; padding: 2px;
+  transition: color var(--transition);
+}
+.modal-close:hover { color: var(--red); }
+.modal-body { padding: 22px; }
+.modal-footer {
+  padding: 14px 22px; border-top: 1px solid var(--gray-100);
+  display: flex; justify-content: flex-end; gap: 10px;
+  position: sticky; bottom: 0; background: var(--white);
+}
+
+/* ===== FORM ELEMENTS ===== */
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block; margin-bottom: 6px;
+  font-size: 0.85rem; font-weight: 600; color: var(--gray-700);
+}
+.form-label .req { color: var(--red); margin-left: 3px; }
+.form-control {
+  width: 100%; padding: 9px 12px;
+  border: 1.5px solid var(--gray-300); border-radius: 7px;
+  font-size: 0.9rem; outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.form-control:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(192,57,43,.1);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-hint { font-size: 0.77rem; color: var(--gray-500); margin-top: 4px; }
+
+/* ===== TOAST ===== */
+#toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--gray-800); color: var(--white);
+  border-radius: 10px; padding: 12px 18px;
+  font-size: 0.88rem; box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 10px;
+  min-width: 240px; max-width: 380px;
+  pointer-events: all;
+  animation: toastIn .3s ease;
+}
+.toast.success { background: var(--success); }
+.toast.error   { background: var(--danger); }
+.toast.info    { background: var(--info); }
+.toast.warning { background: var(--warning); }
+@keyframes toastIn  { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:none; } }
+@keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateX(40px); } }
+
+/* ===== CHART (pure CSS bar) ===== */
+.chart-bar-group { display: flex; gap: 4px; align-items: flex-end; height: 140px; }
+.chart-bar-wrap  { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.chart-bar {
+  width: 100%; border-radius: 5px 5px 0 0;
+  transition: height .5s cubic-bezier(.34,1.56,.64,1);
+  min-height: 4px; position: relative;
+}
+.chart-bar:hover::after {
+  content: attr(data-val);
+  position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+  background: var(--gray-800); color: var(--white);
+  font-size: .7rem; border-radius: 4px; padding: 2px 6px; white-space: nowrap;
+}
+.chart-label { font-size: .72rem; color: var(--gray-500); text-align: center; }
+
+/* ===== DETAIL PROFILE ===== */
+.profile-header {
+  background: linear-gradient(135deg, var(--red-dark), var(--red));
+  border-radius: var(--radius); padding: 22px; color: var(--white);
+  display: flex; align-items: center; gap: 18px; margin-bottom: 18px;
+}
+.profile-avatar {
+  width: 66px; height: 66px; border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; flex-shrink: 0; border: 3px solid var(--gold);
+}
+.profile-info h3 { font-size: 1.2rem; font-weight: 800; }
+.profile-info p  { font-size: 0.83rem; opacity: .85; margin-top: 2px; }
+.profile-meta    { display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap; }
+.profile-meta-item { font-size: 0.8rem; }
+
+/* ===== STEP PROGRESS in detail ===== */
+.process-track { display: flex; gap: 0; margin: 18px 0; }
+.track-step {
+  flex: 1; text-align: center; position: relative;
+  padding-top: 8px;
+}
+.track-step::before {
+  content: ''; position: absolute;
+  top: 19px; left: -50%; right: 50%;
+  height: 3px; background: var(--gray-300); z-index: 0;
+}
+.track-step:first-child::before { display: none; }
+.track-step.done::before, .track-step.active::before { background: var(--success); }
+.track-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--gray-300); color: var(--gray-600);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; font-weight: 700; margin: 0 auto 6px;
+  position: relative; z-index: 1; border: 2px solid var(--gray-300);
+  transition: all var(--transition);
+}
+.track-step.done .track-dot  { background: var(--success); color: var(--white); border-color: var(--success); }
+.track-step.active .track-dot { background: var(--gold); color: var(--red-dark); border-color: var(--gold-dark); }
+.track-step .track-label { font-size: .68rem; color: var(--gray-500); line-height: 1.3; }
+.track-step.done .track-label  { color: var(--success); font-weight: 600; }
+.track-step.active .track-label { color: var(--gold-dark); font-weight: 700; }
+
+/* ===== REPORT ===== */
+.report-section { margin-bottom: 28px; }
+.report-section h3 {
+  font-size: 1rem; font-weight: 700; color: var(--red-dark);
+  border-bottom: 2px solid var(--gold); padding-bottom: 6px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.report-stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.report-stat-box {
+  flex: 1; min-width: 120px;
+  background: var(--gray-100); border-radius: 8px; padding: 14px 16px;
+  text-align: center;
+}
+.report-stat-box .rsb-num  { font-size: 2rem; font-weight: 800; }
+.report-stat-box .rsb-label{ font-size: .78rem; color: var(--gray-500); margin-top: 2px; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center; padding: 48px 24px;
+  color: var(--gray-400);
+}
+.empty-state .es-icon { font-size: 3.5rem; margin-bottom: 12px; }
+.empty-state p { font-size: .9rem; }
+
+/* ===== SECTION PAGES (hide/show) ===== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===== PROGRESS NOTE ITEMS ===== */
+.note-item {
+  background: var(--gray-100); border-radius: 7px;
+  padding: 10px 14px; margin-bottom: 8px; font-size: .85rem;
+}
+.note-item .note-time { font-size: .75rem; color: var(--gray-500); margin-top: 3px; }
+
+/* ===== DIVIDER ===== */
+.divider { height: 1px; background: var(--gray-200); margin: 16px 0; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 240px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: none; }
+  #main { margin-left: 0 !important; }
+  .btn-menu-toggle { display: block; }
+  .header-title h1 { font-size: .9rem; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .process-track { overflow-x: auto; }
+}
+@media (max-width: 480px) {
+  #main { padding: 14px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .modal { max-width: 100%; }
+}
+
+/* ===== PRINT ===== */
+@media print {
+  #sidebar, #header, .no-print { display: none !important; }
+  #main { margin: 0 !important; padding: 0 !important; }
+  .card { box-shadow: none; border: 1px solid #ddd; }
+}
+
+/* ===== MISC ===== */
+.text-red    { color: var(--red); }
+.text-gold   { color: var(--gold-dark); }
+.text-success{ color: var(--success); }
+.text-muted  { color: var(--gray-500); }
+.fw-700 { font-weight: 700; }
+.mt-10  { margin-top: 10px; }
+.mt-16  { margin-top: 16px; }
+.mb-16  { margin-bottom: 16px; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between{ display: flex; align-items: center; justify-content: space-between; }
+.gap-8  { gap: 8px; }
+.gap-10 { gap: 10px; }
+
+/* Sidebar overlay for mobile */
+#sidebar-overlay {
+  display: none; position: fixed; inset: 0; z-index: 850;
+  background: rgba(0,0,0,.4);
+}
+#sidebar-overlay.show { display: block; }
+
+/* Info tooltip */
+.info-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(192,57,43,.08); border: 1px solid rgba(192,57,43,.2);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: .8rem; color: var(--red);
+}
+</style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR OVERLAY (mobile) ===== -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- ===== HEADER ===== -->
+<header id="header">
+  <div class="header-left">
+    <button class="btn-menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="header-logo">⭐</div>
+    <div class="header-title">
+      <h1>Phần mềm Quản lý Phát triển Đảng viên</h1>
+      <p>Chi bộ Hệ thống Thông tin Trường — HTTT</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="header-badge">🔒 Nội bộ</span>
+  </div>
+</header>
+
+<!-- ===== SIDEBAR ===== -->
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Tổng quan</div>
+    <div class="nav-item active" onclick="navigate('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Quản lý</div>
+    <div class="nav-item" onclick="navigate('profiles')">
+      <span class="nav-icon">👥</span> Quản lý Hồ sơ
+      <span class="nav-badge" id="nav-badge-profiles">0</span>
+    </div>
+    <div class="nav-item" onclick="navigate('process')">
+      <span class="nav-icon">🔄</span> Quy trình Kết nạp
+    </div>
+    <div class="nav-item" onclick="navigate('forms')">
+      <span class="nav-icon">📋</span> Biểu mẫu
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Phân tích</div>
+    <div class="nav-item" onclick="navigate('report')">
+      <span class="nav-icon">📈</span> Báo cáo &amp; Thống kê
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div>🏛️ Chi bộ HTTT — v2.0</div>
+    <div id="sf-time" style="margin-top:4px;"></div>
+  </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main id="main">
+
+  <!-- ============================== DASHBOARD ============================== -->
+  <div id="page-dashboard" class="page active">
+    <div class="page-header">
+      <div>
+        <h2>📊 Dashboard Tổng quan</h2>
+        <p>Thống kê và theo dõi tình hình phát triển Đảng viên Chi bộ HTTT</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('modal-add-profile')">
+        ➕ Thêm Hồ sơ Mới
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="dash-stats"></div>
+
+    <!-- Chart + Recent list -->
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📊 Biểu đồ theo Trạng thái</span>
+        </div>
+        <div id="dash-chart" style="display:flex;gap:4px;align-items:flex-end;height:150px;padding-top:30px;"></div>
+        <div id="dash-chart-labels" style="display:flex;gap:4px;margin-top:8px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📅 Hồ sơ Gần Nhất</span>
+          <button class="btn btn-sm btn-outline" onclick="navigate('profiles')">Xem tất cả</button>
+        </div>
+        <div id="dash-recent"></div>
+      </div>
+    </div>
+
+    <!-- Process overview -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🔄 Quy trình Phát triển Đảng viên</span>
+        <button class="btn btn-sm btn-outline" onclick="navigate('process')">Chi tiết</button>
+      </div>
+      <div class="steps-container" id="dash-steps"></div>
+    </div>
+  </div>
+
+  <!-- ============================== PROFILES ============================== -->
+  <div id="page-profiles" class="page">
+    <div class="page-header">
+      <div>
+        <h2>👥 Quản lý Hồ sơ</h2>
+        <p>Danh sách toàn bộ hồ sơ kết nạp Đảng viên</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('modal-add-profile')">
+        ➕ Thêm Hồ sơ Mới
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="filter-bar">
+        <input type="text" id="search-input" placeholder="🔍 Tìm kiếm tên, đơn vị..." oninput="renderProfileTable()">
+        <select id="filter-status" onchange="renderProfileTable()">
+          <option value="">Tất cả trạng thái</option>
+          <option value="new">Mới nộp</option>
+          <option value="process">Đang xử lý</option>
+          <option value="done">Hoàn thành</option>
+          <option value="reject">Từ chối</option>
+        </select>
+        <select id="filter-step" onchange="renderProfileTable()">
+          <option value="">Tất cả bước</option>
+          <option value="1">Bước 1</option>
+          <option value="2">Bước 2</option>
+          <option value="3">Bước 3</option>
+          <option value="4">Bước 4</option>
+          <option value="5">Bước 5</option>
+          <option value="6">Bước 6 (Hoàn thành)</option>
+        </select>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Họ và Tên</th>
+              <th>Ngày sinh</th>
+              <th>Đơn vị / Lớp</th>
+              <th>Ngày nộp</th>
+              <th>Bước hiện tại</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="profile-table-body"></tbody>
+        </table>
+      </div>
+      <div id="profile-empty" class="empty-state" style="display:none;">
+        <div class="es-icon">📭</div>
+        <p>Chưa có hồ sơ nào. Hãy thêm hồ sơ mới!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================== PROCESS ============================== -->
+  <div id="page-process" class="page">
+    <div class="page-header">
+      <div>
+        <h2>🔄 Quy trình Kết nạp Đảng viên</h2>
+        <p>6 bước theo quy định của Điều lệ Đảng Cộng sản Việt Nam</p>
+      </div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-header">
+        <span class="card-title">📑 Sơ đồ quy trình tổng quát</span>
+        <span class="info-pill">⏱️ Thời gian: 12–18 tháng</span>
+      </div>
+      <div class="steps-container" id="process-steps-full"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">👤 Theo dõi từng Hồ sơ</span>
+      </div>
+      <div class="filter-bar">
+        <select id="process-profile-select" onchange="renderProfileProcess()">
+          <option value="">-- Chọn hồ sơ --</option>
+        </select>
+      </div>
+      <div id="process-profile-detail"></div>
+    </div>
+  </div>
+
+  <!-- ============================== FORMS ============================== -->
+  <div id="page-forms" class="page">
+    <div class="page-header">
+      <div>
+        <h2>📋 Biểu mẫu Kết nạp Đảng</h2>
+        <p>10 biểu mẫu theo quy định của Ban Tổ chức Trung ương</p>
+      </div>
+    </div>
+    <div class="forms-grid" id="forms-grid"></div>
+  </div>
+
+  <!-- ============================== REPORT ============================== -->
+  <div id="page-report" class="page">
+    <div class="page-header">
+      <div>
+        <h2>📈 Báo cáo &amp; Thống kê</h2>
+        <p>Tổng hợp tình hình phát triển Đảng viên Chi bộ HTTT</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline no-print" onclick="window.print()">🖨️ In Báo cáo</button>
+        <button class="btn btn-primary no-print" onclick="exportReport()">📥 Xuất Excel</button>
+      </div>
+    </div>
+    <div id="report-content"></div>
+  </div>
+
+</main>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container"></div>
+
+<!-- ============================== MODALS ============================== -->
+
+<!-- ADD / EDIT PROFILE -->
+<div class="modal-overlay" id="modal-add-profile">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-profile-title">➕ Thêm Hồ sơ Mới</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-profile')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Họ và tên <span class="req">*</span></label>
+          <input class="form-control" id="inp-name" placeholder="Nguyễn Văn A" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ngày sinh <span class="req">*</span></label>
+          <input class="form-control" type="date" id="inp-dob" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Giới tính</label>
+          <select class="form-control" id="inp-gender">
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Số điện thoại</label>
+          <input class="form-control" id="inp-phone" placeholder="0901234567">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Đơn vị / Lớp <span class="req">*</span></label>
+        <input class="form-control" id="inp-unit" placeholder="VD: Lớp HTTT-K65, Khoa CNTT">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" id="inp-email" placeholder="example@hust.edu.vn">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Địa chỉ thường trú</label>
+        <input class="form-control" id="inp-address" placeholder="Số nhà, đường, phường, quận, tỉnh/thành phố">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Trình độ học vấn</label>
+          <select class="form-control" id="inp-edu">
+            <option value="Đại học">Đại học</option>
+            <option value="Cao đẳng">Cao đẳng</option>
+            <option value="THPT">THPT</option>
+            <option value="Thạc sĩ">Thạc sĩ</option>
+            <option value="Tiến sĩ">Tiến sĩ</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ngày nộp hồ sơ</label>
+          <input class="form-control" type="date" id="inp-submit-date">
+          <div class="form-hint">Để trống = ngày hôm nay</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Đảng viên giới thiệu 1</label>
+        <input class="form-control" id="inp-ref1" placeholder="Họ tên, chức vụ">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Đảng viên giới thiệu 2</label>
+        <input class="form-control" id="inp-ref2" placeholder="Họ tên, chức vụ">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ghi chú</label>
+        <textarea class="form-control" id="inp-note" rows="3" placeholder="Ghi chú thêm..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-profile')">Hủy</button>
+      <button class="btn btn-primary" onclick="saveProfile()">💾 Lưu hồ sơ</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE DETAIL -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="detail-title">📄 Chi tiết Hồ sơ</h3>
+      <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-detail')">Đóng</button>
+      <button class="btn btn-warning" id="detail-edit-btn" onclick="">✏️ Chỉnh sửa</button>
+      <button class="btn btn-primary" id="detail-next-btn" onclick="">▶ Bước tiếp theo</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORM GUIDE -->
+<div class="modal-overlay" id="modal-form-guide">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="guide-title">📋 Hướng dẫn điền mẫu</h3>
+      <button class="modal-close" onclick="closeModal('modal-form-guide')">✕</button>
+    </div>
+    <div class="modal-body" id="guide-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-form-guide')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="modal-overlay" id="modal-confirm-delete">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3>⚠️ Xác nhận Xóa</h3>
+      <button class="modal-close" onclick="closeModal('modal-confirm-delete')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Bạn có chắc muốn xóa hồ sơ của <strong id="delete-name"></strong>?</p>
+      <p style="color:var(--gray-500);font-size:.85rem;margin-top:8px;">Thao tác này không thể hoàn tác.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-confirm-delete')">Hủy</button>
+      <button class="btn btn-danger" id="confirm-delete-btn">🗑️ Xóa</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE STATUS -->
+<div class="modal-overlay" id="modal-update-status">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3>🔄 Cập nhật Trạng thái</h3>
+      <button class="modal-close" onclick="closeModal('modal-update-status')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Trạng thái mới</label>
+        <select class="form-control" id="inp-new-status">
+          <option value="new">🆕 Mới nộp</option>
+          <option value="process">⏳ Đang xử lý</option>
+          <option value="done">✅ Hoàn thành</option>
+          <option value="reject">❌ Từ chối</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ghi chú cập nhật</label>
+        <textarea class="form-control" id="inp-status-note" rows="3" placeholder="Lý do / ghi chú..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-update-status')">Hủy</button>
+      <button class="btn btn-primary" onclick="confirmUpdateStatus()">✔ Cập nhật</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DỮ LIỆU CỐ ĐỊNH
+// ============================================================
+
+/** Danh sách 10 biểu mẫu */
+const FORMS_DATA = [
+  {
+    id: 'Mau-1-KND',
+    file: 'Mau-1-KND.doc',
+    name: 'Đơn xin vào Đảng',
+    step: 1,
+    desc: 'Đơn do người xin vào Đảng tự viết tay, trình bày nguyện vọng, lý do phấn đấu vào Đảng, lời hứa thực hiện nhiệm vụ Đảng viên.',
+    guide: `<p><strong>Mẫu 1-KND: Đơn xin vào Đảng</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Viết tay hoặc đánh máy, chữ ký tự tay</li>
+      <li>Ghi rõ: Họ tên, ngày sinh, đơn vị công tác/học tập</li>
+      <li>Nêu rõ nguyện vọng, lý do phấn đấu vào Đảng</li>
+      <li>Cam kết thực hiện Cương lĩnh, Điều lệ Đảng</li>
+      <li>Ghi rõ ngày, tháng, năm và ký tên</li>
+      <li>Nộp cho Bí thư Chi bộ trực tiếp</li>
+    </ul>`
+  },
+  {
+    id: 'Mau-2-KND',
+    file: 'Mau-2-KND.doc',
+    name: 'Lý lịch của người xin vào Đảng',
+    step: 1,
+    desc: 'Lý lịch khai chi tiết về bản thân, gia đình, quá trình học tập, công tác, hoạt động xã hội.',
+    guide: `<p><strong>Mẫu 2-KND: Lý lịch người xin vào Đảng</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Khai đầy đủ các mục theo biểu mẫu</li>
+      <li>Quá trình học tập: từ THPT trở lên</li>
+      <li>Quá trình công tác: từ khi đi làm/học ĐH</li>
+      <li>Thành phần gia đình: cha, mẹ, vợ/chồng, anh/chị/em</li>
+      <li>Quan hệ với nước ngoài (nếu có)</li>
+      <li>Có xác nhận của địa phương nơi thường trú</li>
+      <li>Ảnh 4x6 mới nhất, phông nền đỏ</li>
+    </ul>`
+  },
+  {
+    id: 'Mau_3_KND',
+    file: 'Mau_3_KND.doc',
+    name: 'Giấy giới thiệu người vào Đảng',
+    step: 2,
+    desc: 'Do một Đảng viên chính thức trực tiếp giới thiệu người vào Đảng, xác nhận đã tìm hiểu kỹ quá trình tu dưỡng, rèn luyện.',
+    guide: `<p><strong>Mẫu 3-KND: Giấy giới thiệu (một Đảng viên)</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Do Đảng viên chính thức (≥12 tháng tuổi Đảng) ký</li>
+      <li>Ghi rõ quá trình quen biết, tìm hiểu người được giới thiệu</li>
+      <li>Nhận xét về phẩm chất chính trị, đạo đức, lối sống</li>
+      <li>Chịu trách nhiệm về nội dung giới thiệu</li>
+    </ul>`
+  },
+  {
+    id: 'Mau_3A_KND',
+    file: 'Mau_3A_KND.doc',
+    name: 'Giấy giới thiệu người vào Đảng (hai Đảng viên)',
+    step: 2,
+    desc: 'Do hai Đảng viên chính thức cùng giới thiệu một người vào Đảng, dùng khi đương sự chưa phải Đoàn viên hoặc theo yêu cầu chi bộ.',
+    guide: `<p><strong>Mẫu 3A-KND: Giấy giới thiệu (hai Đảng viên)</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Áp dụng cho người không phải Đoàn viên thanh niên</li>
+      <li>Hai Đảng viên chính thức ký riêng phần nhận xét của mình</li>
+      <li>Mỗi Đảng viên chịu trách nhiệm độc lập</li>
+      <li>Tuổi Đảng của người giới thiệu ≥ 12 tháng</li>
+    </ul>`
+  },
+  {
+    id: 'Mau_4_KND',
+    file: 'Mau_4_KND.doc',
+    name: 'Nghị quyết giới thiệu Đoàn viên ưu tú vào Đảng',
+    step: 3,
+    desc: 'Nghị quyết của Ban Chấp hành Đoàn cơ sở giới thiệu Đoàn viên ưu tú cho Chi bộ xem xét kết nạp Đảng.',
+    guide: `<p><strong>Mẫu 4-KND: Nghị quyết của Đoàn cơ sở</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Do Ban Chấp hành Đoàn cơ sở họp và thông qua</li>
+      <li>Ghi rõ số phiếu đồng ý/tổng số UV BCH Đoàn</li>
+      <li>Bí thư Đoàn ký tên, đóng dấu</li>
+      <li>Nhận xét về thành tích Đoàn viên trong 03 năm gần nhất</li>
+    </ul>`
+  },
+  {
+    id: 'Mau_4_1_KND',
+    file: 'Mau_4_1_KND.doc',
+    name: 'Nghị quyết đề nghị giới thiệu Đoàn viên vào Đảng của Chi Đoàn',
+    step: 3,
+    desc: 'Nghị quyết của Chi Đoàn (cấp Chi) đề nghị giới thiệu Đoàn viên ưu tú, trước khi Ban Chấp hành Đoàn cơ sở ra nghị quyết.',
+    guide: `<p><strong>Mẫu 4.1-KND: Nghị quyết Chi Đoàn</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Do Chi Đoàn họp toàn thể Đoàn viên biểu quyết</li>
+      <li>Ghi rõ số Đoàn viên dự họp/tổng số Đoàn viên</li>
+      <li>Số phiếu đồng ý ≥ 2/3 tổng số Đoàn viên</li>
+      <li>Bí thư Chi Đoàn ký, gửi lên Ban Chấp hành Đoàn cơ sở</li>
+    </ul>`
+  },
+  {
+    id: 'Mau_5_KND',
+    file: 'Mau_5_KND.doc',
+    name: 'Tổng hợp ý kiến nhận xét',
+    step: 4,
+    desc: 'Văn bản tổng hợp ý kiến nhận xét của tập thể nơi người vào Đảng học tập, công tác về phẩm chất, năng lực.',
+    guide: `<p><strong>Mẫu 5-KND: Tổng hợp ý kiến nhận xét</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Họp lấy ý kiến của tập thể nơi học tập/công tác</li>
+      <li>Ghi rõ số người tham dự / tổng số</li>
+      <li>Tổng hợp số ý kiến đồng ý, không đồng ý, ý kiến khác</li>
+      <li>Người lập biên bản ký, Bí thư Chi bộ xác nhận</li>
+    </ul>`
+  },
+  {
+    id: 'Mau_5a_KND',
+    file: 'Mau_5a_KND.doc',
+    name: 'Ý kiến nhận xét của Chi ủy nơi cư trú',
+    step: 4,
+    desc: 'Ý kiến nhận xét của Chi ủy / Chi bộ nơi người vào Đảng cư trú về phẩm chất chính trị, đạo đức, lối sống, quan hệ với nhân dân.',
+    guide: `<p><strong>Mẫu 5A-KND: Nhận xét của Chi ủy nơi cư trú</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Do Bí thư Chi ủy/Chi bộ nơi cư trú ký và đóng dấu</li>
+      <li>Nhận xét về đạo đức, lối sống, quan hệ hàng xóm</li>
+      <li>Chấp hành pháp luật, nghĩa vụ công dân</li>
+      <li>Gửi về Chi bộ đơn vị (niêm phong nếu cần)</li>
+    </ul>`
+  },
+  {
+    id: 'Mau_5b_KND',
+    file: 'Mau_5b_KND.doc',
+    name: 'Ý kiến nhận xét của đại diện tổ chức Đoàn thể',
+    step: 4,
+    desc: 'Ý kiến nhận xét của đại diện tổ chức Đoàn thể (Công đoàn, Đoàn TNCS HCM, Hội sinh viên...) nơi người vào Đảng là thành viên.',
+    guide: `<p><strong>Mẫu 5B-KND: Nhận xét của Đoàn thể</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Do Thủ trưởng tổ chức Đoàn thể ký, đóng dấu</li>
+      <li>Đánh giá về hoạt động phong trào, đóng góp</li>
+      <li>Ý thức tổ chức kỷ luật trong tổ chức</li>
+      <li>Xếp loại Đoàn viên/hội viên 03 năm gần nhất</li>
+    </ul>`
+  },
+  {
+    id: 'Mau_6_KND',
+    file: 'Mau_6_KND.doc',
+    name: 'Nghị quyết đề nghị kết nạp Đảng viên',
+    step: 5,
+    desc: 'Nghị quyết của Chi bộ đề nghị cấp trên xem xét, chuẩn y kết nạp Đảng viên mới sau khi đã thực hiện đầy đủ các quy trình.',
+    guide: `<p><strong>Mẫu 6-KND: Nghị quyết kết nạp Đảng viên</strong></p>
+    <ul style="margin:12px 0 0 18px;line-height:2">
+      <li>Do Chi bộ họp toàn thể Đảng viên biểu quyết (bỏ phiếu kín)</li>
+      <li>Số Đảng viên dự họp ≥ 2/3 tổng số Đảng viên chính thức</li>
+      <li>Số phiếu đồng ý ≥ quá 1/2 tổng số Đảng viên</li>
+      <li>Bí thư Chi bộ ký, gửi lên Đảng ủy cơ sở phê duyệt</li>
+      <li>Lễ kết nạp tổ chức trang trọng, có cờ Đảng, chân dung Bác Hồ</li>
+    </ul>`
+  }
+];
+
+/** Định nghĩa 6 bước quy trình */
+const PROCESS_STEPS = [
+  {
+    num: 1, title: 'Bước 1: Nộp Hồ sơ',
+    desc: 'Người vào Đảng hoàn thiện và nộp Đơn xin vào Đảng (Mẫu 1) và Lý lịch (Mẫu 2) cho Chi bộ.',
+    forms: ['Mẫu 1', 'Mẫu 2'], duration: '1–2 tuần'
+  },
+  {
+    num: 2, title: 'Bước 2: Giấy Giới thiệu',
+    desc: 'Đảng viên chính thức làm Giấy giới thiệu (Mẫu 3 hoặc Mẫu 3A) sau khi tìm hiểu kỹ người được giới thiệu.',
+    forms: ['Mẫu 3', 'Mẫu 3A'], duration: '2–4 tuần'
+  },
+  {
+    num: 3, title: 'Bước 3: Nghị quyết Giới thiệu',
+    desc: 'Chi Đoàn và Ban Chấp hành Đoàn cơ sở ra Nghị quyết giới thiệu Đoàn viên ưu tú vào Đảng.',
+    forms: ['Mẫu 4', 'Mẫu 4.1'], duration: '2–4 tuần'
+  },
+  {
+    num: 4, title: 'Bước 4: Tổng hợp Nhận xét',
+    desc: 'Lấy ý kiến tập thể, Chi ủy nơi cư trú và tổ chức Đoàn thể. Tổng hợp đầy đủ các nhận xét.',
+    forms: ['Mẫu 5', 'Mẫu 5A', 'Mẫu 5B'], duration: '4–6 tuần'
+  },
+  {
+    num: 5, title: 'Bước 5: Nghị quyết Kết nạp',
+    desc: 'Chi bộ họp, biểu quyết và ra Nghị quyết đề nghị kết nạp Đảng viên gửi Đảng ủy cơ sở phê duyệt.',
+    forms: ['Mẫu 6'], duration: '4–8 tuần'
+  },
+  {
+    num: 6, title: 'Bước 6: Hoàn thành Kết nạp',
+    desc: 'Đảng ủy cơ sở chuẩn y, tổ chức Lễ kết nạp Đảng viên trang trọng. Đảng viên mới bắt đầu thời gian dự bị 12 tháng.',
+    forms: [], duration: 'Sau phê duyệt'
+  }
+];
+
+// ============================================================
+// STATE & STORAGE
+// ============================================================
+const STORAGE_KEY = 'chibo_httt_profiles_v2';
+
+function loadProfiles() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+function saveProfiles(arr) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+
+function genId() {
+  return 'HS' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase();
+}
+
+/** Tạo dữ liệu mẫu nếu chưa có */
+function seedSampleData() {
+  if (loadProfiles().length > 0) return;
+  const samples = [
+    {
+      id: genId(), name: 'Nguyễn Văn An', dob: '2002-05-15', gender: 'Nam',
+      phone: '0901234561', unit: 'Lớp HTTT-K65, Khoa CNTT', email: 'an.nv@hust.edu.vn',
+      address: '12 Trần Duy Hưng, Cầu Giấy, Hà Nội',
+      edu: 'Đại học', ref1: 'ĐV Trần Minh Khoa - Chi ủy viên', ref2: 'ĐV Lê Thị Hoa - Đảng viên',
+      note: 'Sinh viên xuất sắc, hoạt động Đoàn tích cực',
+      status: 'done', currentStep: 6,
+      submitDate: '2024-01-10',
+      steps: [
+        { done: true, note: 'Đã nộp đầy đủ Mẫu 1, Mẫu 2', date: '2024-01-10' },
+        { done: true, note: 'Đã có Giấy giới thiệu (Mẫu 3A)', date: '2024-01-25' },
+        { done: true, note: 'Chi Đoàn và BCH Đoàn đã ra Nghị quyết', date: '2024-02-15' },
+        { done: true, note: 'Đã tổng hợp đủ Mẫu 5, 5A, 5B', date: '2024-03-10' },
+        { done: true, note: 'Chi bộ họp, biểu quyết 100% đồng ý', date: '2024-04-05' },
+        { done: true, note: 'Lễ kết nạp ngày 19/05/2024', date: '2024-05-19' }
+      ],
+      createdAt: '2024-01-10T08:00:00'
+    },
+    {
+      id: genId(), name: 'Trần Thị Bích', dob: '2001-09-22', gender: 'Nữ',
+      phone: '0912345672', unit: 'Lớp HTTT-K64, Khoa CNTT', email: 'bich.tt@hust.edu.vn',
+      address: '88 Nguyễn Chí Thanh, Đống Đa, Hà Nội',
+      edu: 'Đại học', ref1: 'ĐV Phạm Văn Long - Bí thư Chi bộ', ref2: '',
+      note: 'Bí thư Chi Đoàn lớp, thành tích học tập tốt',
+      status: 'process', currentStep: 4,
+      submitDate: '2024-08-01',
+      steps: [
+        { done: true, note: 'Hoàn thành Mẫu 1, Mẫu 2', date: '2024-08-01' },
+        { done: true, note: 'ĐV Phạm Văn Long giới thiệu (Mẫu 3)', date: '2024-08-20' },
+        { done: true, note: 'Chi Đoàn K64 ra nghị quyết ngày 05/09', date: '2024-09-05' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' }
+      ],
+      createdAt: '2024-08-01T09:30:00'
+    },
+    {
+      id: genId(), name: 'Lê Minh Cường', dob: '2003-03-07', gender: 'Nam',
+      phone: '0987654323', unit: 'Lớp HTTT-K66, Khoa CNTT', email: 'cuong.lm@hust.edu.vn',
+      address: '5 Lê Duẩn, Hoàn Kiếm, Hà Nội',
+      edu: 'Đại học', ref1: 'ĐV Nguyễn Thị Mai - Giảng viên', ref2: '',
+      note: 'Tham gia phong trào tình nguyện, hoạt động ngoại khóa',
+      status: 'process', currentStep: 2,
+      submitDate: '2025-01-15',
+      steps: [
+        { done: true, note: 'Nộp Mẫu 1, Mẫu 2 đầy đủ', date: '2025-01-15' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' }
+      ],
+      createdAt: '2025-01-15T10:00:00'
+    },
+    {
+      id: genId(), name: 'Phạm Thu Dung', dob: '2002-11-30', gender: 'Nữ',
+      phone: '0345678904', unit: 'Lớp HTTT-K65, Khoa CNTT', email: 'dung.pt@hust.edu.vn',
+      address: '30 Đinh Tiên Hoàng, Hai Bà Trưng, Hà Nội',
+      edu: 'Đại học', ref1: 'ĐV Trần Minh Khoa - Chi ủy viên', ref2: 'ĐV Hoàng Văn Sơn - Đảng viên',
+      note: 'Sinh viên 5 tốt, Phó Bí thư Chi Đoàn',
+      status: 'new', currentStep: 1,
+      submitDate: '2025-06-01',
+      steps: [
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' }
+      ],
+      createdAt: '2025-06-01T14:00:00'
+    },
+    {
+      id: genId(), name: 'Hoàng Văn Đức', dob: '2000-07-18', gender: 'Nam',
+      phone: '0765432105', unit: 'Lớp HTTT-K63, Khoa CNTT', email: 'duc.hv@hust.edu.vn',
+      address: '145 Xuân Thủy, Cầu Giấy, Hà Nội',
+      edu: 'Đại học', ref1: 'ĐV Lê Thị Hoa - Đảng viên', ref2: '',
+      note: 'Đã bị từ chối do vi phạm kỷ luật năm 2023',
+      status: 'reject', currentStep: 3,
+      submitDate: '2023-09-01',
+      steps: [
+        { done: true, note: 'Nộp hồ sơ ban đầu', date: '2023-09-01' },
+        { done: true, note: 'Có giấy giới thiệu', date: '2023-09-20' },
+        { done: false, note: 'Bị tạm dừng do vi phạm', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' },
+        { done: false, note: '', date: '' }
+      ],
+      createdAt: '2023-09-01T08:00:00'
+    }
+  ];
+  saveProfiles(samples);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+let currentPage = 'dashboard';
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) {
+      n.classList.add('active');
+    }
+  });
+  currentPage = page;
+  closeSidebar();
+  // Render tương ứng
+  if (page === 'dashboard')  renderDashboard();
+  if (page === 'profiles')   renderProfileTable();
+  if (page === 'process')    renderProcess();
+  if (page === 'forms')      renderForms();
+  if (page === 'report')     renderReport();
+}
+
+// Sidebar toggle (mobile)
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Close modal clicking outside
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) closeModal(this.id);
+  });
+});
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type = 'success', duration = 3000) {
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  const tc = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${icons[type]||'💬'}</span> <span>${msg}</span>`;
+  tc.appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'toastOut .3s ease forwards';
+    setTimeout(() => t.remove(), 300);
+  }, duration);
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function fmtDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
+  } catch { return dateStr; }
+}
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+function statusLabel(s) {
+  const map = {
+    new:     '<span class="badge badge-new">🆕 Mới nộp</span>',
+    process: '<span class="badge badge-process">⏳ Đang xử lý</span>',
+    done:    '<span class="badge badge-done">✅ Hoàn thành</span>',
+    reject:  '<span class="badge badge-reject">❌ Từ chối</span>'
+  };
+  return map[s] || s;
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const profiles = loadProfiles();
+  const counts = { new: 0, process: 0, done: 0, reject: 0 };
+  profiles.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
+
+  // Stats
+  const sg = document.getElementById('dash-stats');
+  sg.innerHTML = `
+    <div class="stat-card red">
+      <div class="stat-icon red-bg">📁</div>
+      <div class="stat-info">
+        <div class="stat-number text-red">${profiles.length}</div>
+        <div class="stat-label">Tổng số Hồ sơ</div>
+      </div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-icon gold-bg">🆕</div>
+      <div class="stat-info">
+        <div class="stat-number" style="color:var(--gold-dark)">${counts.new}</div>
+        <div class="stat-label">Mới nộp</div>
+      </div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon blue-bg">⏳</div>
+      <div class="stat-info">
+        <div class="stat-number" style="color:var(--info)">${counts.process}</div>
+        <div class="stat-label">Đang xử lý</div>
+      </div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon green-bg">✅</div>
+      <div class="stat-info">
+        <div class="stat-number text-success">${counts.done}</div>
+        <div class="stat-label">Hoàn thành</div>
+      </div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-icon red-bg">❌</div>
+      <div class="stat-info">
+        <div class="stat-number text-red">${counts.reject}</div>
+        <div class="stat-label">Từ chối</div>
+      </div>
+    </div>
+  `;
+
+  // Nav badge
+  document.getElementById('nav-badge-profiles').textContent = profiles.length;
+
+  // Chart
+  const chartData = [
+    { label: 'Mới', val: counts.new,     color: '#f39c12' },
+    { label: 'Xử lý', val: counts.process, color: '#2980b9' },
+    { label: 'Xong',  val: counts.done,    color: '#27ae60' },
+    { label: 'Từ chối',val: counts.reject,  color: '#c0392b' }
+  ];
+  const maxVal = Math.max(...chartData.map(d => d.val), 1);
+  const chart = document.getElementById('dash-chart');
+  const labels = document.getElementById('dash-chart-labels');
+  chart.innerHTML = chartData.map(d => `
+    <div class="chart-bar-wrap" style="flex:1">
+      <div style="font-size:.75rem;font-weight:700;color:${d.color};margin-bottom:4px;">${d.val}</div>
+      <div class="chart-bar" style="height:${Math.round((d.val/maxVal)*110)}px;background:${d.color};width:100%;" data-val="${d.val}"></div>
+    </div>
+  `).join('');
+  labels.innerHTML = chartData.map(d =>
+    `<div style="flex:1;text-align:center;font-size:.72rem;color:var(--gray-500);">${d.label}</div>`
+  ).join('');
+
+  // Recent list (top 5)
+  const recent = [...profiles].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0,5);
+  const dr = document.getElementById('dash-recent');
+  if (!recent.length) {
+    dr.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><p>Chưa có hồ sơ nào</p></div>';
+  } else {
+    dr.innerHTML = recent.map(p => `
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--gray-100);cursor:pointer"
+           onclick="showDetail('${p.id}')">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-light));
+             display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.85rem;flex-shrink:0;">
+          ${p.name.split(' ').slice(-1)[0][0]}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+          <div style="font-size:.75rem;color:var(--gray-500)">${p.unit}</div>
+        </div>
+        <div>${statusLabel(p.status)}</div>
+      </div>
+    `).join('');
+  }
+
+  // Steps overview
+  const ds = document.getElementById('dash-steps');
+  ds.innerHTML = PROCESS_STEPS.map(s => `
+    <div class="step-item">
+      <div class="step-num">${s.num}</div>
+      <div class="step-content">
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+        <div class="step-forms">
+          ${s.forms.map(f => `<span class="step-form-tag">${f}</span>`).join('')}
+          <span class="step-form-tag" style="background:rgba(39,174,96,.08);color:var(--success);border-color:rgba(39,174,96,.2);">⏱️ ${s.duration}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// PROFILE TABLE
+// ============================================================
+function renderProfileTable() {
+  const profiles = loadProfiles();
+  const search = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+  const filterStatus = document.getElementById('filter-status')?.value || '';
+  const filterStep = document.getElementById('filter-step')?.value || '';
+
+  let filtered = profiles.filter(p => {
+    const matchSearch = !search || p.name.toLowerCase().includes(search) || p.unit.toLowerCase().includes(search);
+    const matchStatus = !filterStatus || p.status === filterStatus;
+    const matchStep = !filterStep || String(p.currentStep) === filterStep;
+    return matchSearch && matchStatus && matchStep;
+  });
+
+  const tbody = document.getElementById('profile-table-body');
+  const empty = document.getElementById('profile-empty');
+
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map((p, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>
+        <div style="font-weight:600">${p.name}</div>
+        <div style="font-size:.75rem;color:var(--gray-500)">${p.phone || ''}</div>
+      </td>
+      <td>${fmtDate(p.dob)}</td>
+      <td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${p.unit}">${p.unit}</td>
+      <td>${fmtDate(p.submitDate)}</td>
+      <td>
+        <span style="font-weight:600;color:var(--red)">Bước ${p.currentStep}</span>
+        <div style="font-size:.73rem;color:var(--gray-500)">${PROCESS_STEPS[p.currentStep-1]?.title.replace(/Bước \d+: /,'') || ''}</div>
+      </td>
+      <td>${statusLabel(p.status)}</td>
+      <td>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <button class="btn btn-sm btn-info" onclick="showDetail('${p.id}')">👁 Xem</button>
+          <button class="btn btn-sm btn-warning" onclick="openEditProfile('${p.id}')">✏️</button>
+          <button class="btn btn-sm btn-outline" onclick="openUpdateStatus('${p.id}')">🔄</button>
+          <button class="btn btn-sm btn-danger" onclick="confirmDelete('${p.id}')">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ============================================================
+// ADD / EDIT PROFILE
+// ============================================================
+function openAddProfile() {
+  document.getElementById('modal-profile-title').textContent = '➕ Thêm Hồ sơ Mới';
+  document.getElementById('edit-id').value = '';
+  ['name','dob','phone','unit','email','address','note','ref1','ref2'].forEach(f => {
+    const el = document.getElementById('inp-' + f);
+    if (el) el.value = '';
+  });
+  document.getElementById('inp-gender').value = 'Nam';
+  document.getElementById('inp-edu').value = 'Đại học';
+  document.getElementById('inp-submit-date').value = today();
+  openModal('modal-add-profile');
+}
+
+function openEditProfile(id) {
+  const profiles = loadProfiles();
+  const p = profiles.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modal-profile-title').textContent = '✏️ Chỉnh sửa Hồ sơ';
+  document.getElementById('edit-id').value = p.id;
+  document.getElementById('inp-name').value = p.name || '';
+  document.getElementById('inp-dob').value = p.dob || '';
+  document.getElementById('inp-gender').value = p.gender || 'Nam';
+  document.getElementById('inp-phone').value = p.phone || '';
+  document.getElementById('inp-unit').value = p.unit || '';
+  document.getElementById('inp-email').value = p.email || '';
+  document.getElementById('inp-address').value = p.address || '';
+  document.getElementById('inp-edu').value = p.edu || 'Đại học';
+  document.getElementById('inp-submit-date').value = p.submitDate || '';
+  document.getElementById('inp-ref1').value = p.ref1 || '';
+  document.getElementById('inp-ref2').value = p.ref2 || '';
+  document.getElementById('inp-note').value = p.note || '';
+  closeModal('modal-detail');
+  openModal('modal-add-profile');
+}
+
+function saveProfile() {
+  const name = document.getElementById('inp-name').value.trim();
+  const dob  = document.getElementById('inp-dob').value;
+  const unit = document.getElementById('inp-unit').value.trim();
+  if (!name) { showToast('Vui lòng nhập họ tên!', 'error'); return; }
+  if (!dob)  { showToast('Vui lòng nhập ngày sinh!', 'error'); return; }
+  if (!unit) { showToast('Vui lòng nhập đơn vị!', 'error'); return; }
+
+  const profiles = loadProfiles();
+  const editId = document.getElementById('edit-id').value;
+
+  const profileData = {
+    name, dob, unit,
+    gender: document.getElementById('inp-gender').value,
+    phone: document.getElementById('inp-phone').value.trim(),
+    email: document.getElementById('inp-email').value.trim(),
+    address: document.getElementById('inp-address').value.trim(),
+    edu: document.getElementById('inp-edu').value,
+    submitDate: document.getElementById('inp-submit-date').value || today(),
+    ref1: document.getElementById('inp-ref1').value.trim(),
+    ref2: document.getElementById('inp-ref2').value.trim(),
+    note: document.getElementById('inp-note').value.trim()
+  };
+
+  if (editId) {
+    // Edit
+    const idx = profiles.findIndex(p => p.id === editId);
+    if (idx >= 0) {
+      profiles[idx] = { ...profiles[idx], ...profileData };
+      saveProfiles(profiles);
+      showToast('Đã cập nhật hồ sơ thành công!', 'success');
+    }
+  } else {
+    // New
+    const newP = {
+      id: genId(), status: 'new', currentStep: 1,
+      steps: Array.from({length:6}, () => ({done: false, note: '', date: ''})),
+      createdAt: new Date().toISOString(),
+      ...profileData
+    };
+    profiles.push(newP);
+    saveProfiles(profiles);
+    showToast('Đã thêm hồ sơ mới thành công!', 'success');
+  }
+
+  closeModal('modal-add-profile');
+  if (currentPage === 'dashboard') renderDashboard();
+  if (currentPage === 'profiles')  renderProfileTable();
+  if (currentPage === 'process')   renderProcess();
+  if (currentPage === 'report')    renderReport();
+  document.getElementById('nav-badge-profiles').textContent = loadProfiles().length;
+}
+
+// ============================================================
+// DELETE
+// ============================================================
+let deleteTargetId = null;
+function confirmDelete(id) {
+  const profiles = loadProfiles();
+  const p = profiles.find(x => x.id === id);
+  if (!p) return;
+  deleteTargetId = id;
+  document.getElementById('delete-name').textContent = p.name;
+  document.getElementById('confirm-delete-btn').onclick = doDelete;
+  openModal('modal-confirm-delete');
+}
+function doDelete() {
+  if (!deleteTargetId) return;
+  let profiles = loadProfiles();
+  profiles = profiles.filter(p => p.id !== deleteTargetId);
+  saveProfiles(profiles);
+  showToast('Đã xóa hồ sơ!', 'success');
+  closeModal('modal-confirm-delete');
+  deleteTargetId = null;
+  renderDashboard();
+  renderProfileTable();
+  document.getElementById('nav-badge-profiles').textContent = loadProfiles().length;
+}
+
+// ============================================================
+// UPDATE STATUS
+// ============================================================
+let statusTargetId = null;
+function openUpdateStatus(id) {
+  statusTargetId = id;
+  const profiles = loadProfiles();
+  const p = profiles.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('inp-new-status').value = p.status;
+  document.getElementById('inp-status-note').value = '';
+  openModal('modal-update-status');
+}
+function confirmUpdateStatus() {
+  if (!statusTargetId) return;
+  const profiles = loadProfiles();
+  const idx = profiles.findIndex(p => p.id === statusTargetId);
+  if (idx < 0) return;
+  const newStatus = document.getElementById('inp-new-status').value;
+  const note = document.getElementById('inp-status-note').value.trim();
+  profiles[idx].status = newStatus;
+  if (newStatus === 'done') profiles[idx].currentStep = 6;
+  if (note) profiles[idx].note = (profiles[idx].note ? profiles[idx].note + '\n' : '') + `[${new Date().toLocaleDateString('vi-VN')}] ${note}`;
+  saveProfiles(profiles);
+  showToast('Đã cập nhật trạng thái!', 'success');
+  closeModal('modal-update-status');
+  statusTargetId = null;
+  if (currentPage === 'dashboard') renderDashboard();
+  if (currentPage === 'profiles')  renderProfileTable();
+  if (currentPage === 'report')    renderReport();
+}
+
+// ============================================================
+// DETAIL MODAL
+// ============================================================
+let currentDetailId = null;
+function showDetail(id) {
+  const profiles = loadProfiles();
+  const p = profiles.find(x => x.id === id);
+  if (!p) return;
+  currentDetailId = id;
+
+  document.getElementById('detail-title').textContent = `📄 Hồ sơ: ${p.name}`;
+  document.getElementById('detail-edit-btn').onclick = () => openEditProfile(id);
+  document.getElementById('detail-next-btn').onclick = () => advanceStep(id);
+  const nextBtn = document.getElementById('detail-next-btn');
+  if (p.currentStep >= 6 || p.status === 'reject') {
+    nextBtn.disabled = true; nextBtn.style.opacity = '.5';
+  } else {
+    nextBtn.disabled = false; nextBtn.style.opacity = '1';
+  }
+
+  // Process track
+  const trackHtml = PROCESS_STEPS.map((s, i) => {
+    const stepIdx = i;
+    const isDone   = p.steps[stepIdx]?.done;
+    const isActive = !isDone && p.currentStep === s.num;
+    const cls = isDone ? 'done' : isActive ? 'active' : '';
+    return `<div class="track-step ${cls}">
+      <div class="track-dot">${isDone ? '✓' : s.num}</div>
+      <div class="track-label">${s.title.replace(/Bước \d+: /,'')}</div>
+    </div>`;
+  }).join('');
+
+  // Steps detail
+  const stepsHtml = PROCESS_STEPS.map((s, i) => {
+    const st = p.steps[i] || {};
+    const isDone = st.done;
+    return `
+      <div class="step-item ${isDone ? 'done' : p.currentStep === s.num ? 'active' : ''}">
+        <div class="step-num">${isDone ? '✓' : s.num}</div>
+        <div class="step-content">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div class="step-title">${s.title}</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              ${isDone ? `<span style="font-size:.78rem;color:var(--success)">✅ ${fmtDate(st.date)}</span>` : ''}
+              ${!isDone && p.status !== 'reject' ? `<button class="btn btn-sm btn-success" onclick="markStepDone('${id}',${i})">✔ Hoàn thành</button>` : ''}
+            </div>
+          </div>
+          <div class="step-desc">${s.desc}</div>
+          <div class="step-forms">
+            ${s.forms.map(f => `<span class="step-form-tag">${f}</span>`).join('')}
+          </div>
+          ${st.note ? `<div class="note-item" style="margin-top:8px;">💬 ${st.note}</div>` : ''}
+          ${!isDone && p.status !== 'reject' ? `
+            <div style="display:flex;gap:6px;margin-top:8px;">
+              <input class="form-control" id="step-note-${i}" placeholder="Ghi chú bước này..." style="flex:1;font-size:.82rem;">
+              <button class="btn btn-sm btn-outline" onclick="saveStepNote('${id}',${i})">💾</button>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('detail-body').innerHTML = `
+    <div class="profile-header">
+      <div class="profile-avatar">${p.name.split(' ').slice(-1)[0][0]}</div>
+      <div class="profile-info">
+        <h3>${p.name}</h3>
+        <p>${p.gender} · Sinh: ${fmtDate(p.dob)}</p>
+        <div class="profile-meta">
+          <div class="profile-meta-item">🏫 ${p.unit}</div>
+          ${p.phone ? `<div class="profile-meta-item">📞 ${p.phone}</div>` : ''}
+          ${p.email ? `<div class="profile-meta-item">📧 ${p.email}</div>` : ''}
+        </div>
+      </div>
+      <div style="margin-left:auto">${statusLabel(p.status)}</div>
+    </div>
+
+    <!-- Thông tin chi tiết -->
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div>
+        <div style="font-size:.82rem;color:var(--gray-500)">Địa chỉ</div>
+        <div style="font-size:.9rem">${p.address || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:.82rem;color:var(--gray-500)">Trình độ học vấn</div>
+        <div style="font-size:.9rem">${p.edu || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:.82rem;color:var(--gray-500)">ĐV giới thiệu 1</div>
+        <div style="font-size:.9rem">${p.ref1 || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:.82rem;color:var(--gray-500)">ĐV giới thiệu 2</div>
+        <div style="font-size:.9rem">${p.ref2 || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:.82rem;color:var(--gray-500)">Ngày nộp hồ sơ</div>
+        <div style="font-size:.9rem">${fmtDate(p.submitDate)}</div>
+      </div>
+      <div>
+        <div style="font-size:.82rem;color:var(--gray-500)">Bước hiện tại</div>
+        <div style="font-size:.9rem;font-weight:700;color:var(--red)">Bước ${p.currentStep} / 6</div>
+      </div>
+    </div>
+
+    ${p.note ? `<div class="note-item" style="margin-bottom:14px;">📝 ${p.note}</div>` : ''}
+
+    <!-- Tiến trình -->
+    <div style="font-weight:700;font-size:.95rem;margin-bottom:8px;color:var(--red-dark);">📊 Tiến trình</div>
+    <div class="process-track">${trackHtml}</div>
+
+    <div class="divider"></div>
+    <!-- Các bước -->
+    <div style="font-weight:700;font-size:.95rem;margin-bottom:10px;color:var(--red-dark);">🔄 Chi tiết từng Bước</div>
+    <div class="steps-container">${stepsHtml}</div>
+  `;
+
+  openModal('modal-detail');
+}
+
+function markStepDone(id, stepIndex) {
+  const noteEl = document.getElementById(`step-note-${stepIndex}`);
+  const note = noteEl ? noteEl.value.trim() : '';
+  const profiles = loadProfiles();
+  const idx = profiles.findIndex(p => p.id === id);
+  if (idx < 0) return;
+  profiles[idx].steps[stepIndex] = { done: true, note, date: today() };
+  // Advance currentStep nếu đây là bước hiện tại
+  if (profiles[idx].currentStep === stepIndex + 1 && stepIndex + 1 < 6) {
+    profiles[idx].currentStep = stepIndex + 2;
+    profiles[idx].status = 'process';
+  } else if (stepIndex + 1 === 6) {
+    profiles[idx].currentStep = 6;
+    profiles[idx].status = 'done';
+  }
+  saveProfiles(profiles);
+  showToast(`Đã hoàn thành Bước ${stepIndex + 1}!`, 'success');
+  showDetail(id);
+  if (currentPage === 'dashboard') renderDashboard();
+  if (currentPage === 'profiles')  renderProfileTable();
+}
+
+function saveStepNote(id, stepIndex) {
+  const noteEl = document.getElementById(`step-note-${stepIndex}`);
+  if (!noteEl || !noteEl.value.trim()) { showToast('Vui lòng nhập ghi chú!', 'warning'); return; }
+  const profiles = loadProfiles();
+  const idx = profiles.findIndex(p => p.id === id);
+  if (idx < 0) return;
+  profiles[idx].steps[stepIndex].note = noteEl.value.trim();
+  saveProfiles(profiles);
+  showToast('Đã lưu ghi chú!', 'success');
+  showDetail(id);
+}
+
+function advanceStep(id) {
+  const profiles = loadProfiles();
+  const idx = profiles.findIndex(p => p.id === id);
+  if (idx < 0) return;
+  const p = profiles[idx];
+  if (p.currentStep >= 6 || p.status === 'reject') return;
+  const stepIdx = p.currentStep - 1;
+  profiles[idx].steps[stepIdx] = { done: true, note: 'Hoàn thành', date: today() };
+  if (p.currentStep < 6) {
+    profiles[idx].currentStep = p.currentStep + 1;
+    profiles[idx].status = p.currentStep + 1 === 6 ? 'done' : 'process';
+  }
+  saveProfiles(profiles);
+  showToast(`Đã chuyển sang Bước ${profiles[idx].currentStep}!`, 'success');
+  showDetail(id);
+  if (currentPage === 'dashboard') renderDashboard();
+  if (currentPage === 'profiles')  renderProfileTable();
+}
+
+// ============================================================
+// PROCESS PAGE
+// ============================================================
+function renderProcess() {
+  // Full steps
+  const full = document.getElementById('process-steps-full');
+  full.innerHTML = PROCESS_STEPS.map(s => `
+    <div class="step-item">
+      <div class="step-num">${s.num}</div>
+      <div class="step-content">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+          <div class="step-title">${s.title}</div>
+          <span class="info-pill">⏱️ ${s.duration}</span>
+        </div>
+        <div class="step-desc">${s.desc}</div>
+        <div class="step-forms">
+          ${s.forms.map(f => `<span class="step-form-tag">${f}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Profile selector
+  const profiles = loadProfiles();
+  const sel = document.getElementById('process-profile-select');
+  const prevVal = sel.value;
+  sel.innerHTML = '<option value="">-- Chọn hồ sơ --</option>' +
+    profiles.map(p => `<option value="${p.id}" ${p.id===prevVal?'selected':''}>${p.name} — ${p.unit}</option>`).join('');
+  if (prevVal) renderProfileProcess();
+}
+
+function renderProfileProcess() {
+  const id = document.getElementById('process-profile-select').value;
+  const detail = document.getElementById('process-profile-detail');
+  if (!id) { detail.innerHTML = ''; return; }
+  const profiles = loadProfiles();
+  const p = profiles.find(x => x.id === id);
+  if (!p) { detail.innerHTML = ''; return; }
+
+  const trackHtml = PROCESS_STEPS.map((s, i) => {
+    const st = p.steps[i] || {};
+    const cls = st.done ? 'done' : p.currentStep === s.num ? 'active' : '';
+    return `<div class="track-step ${cls}">
+      <div class="track-dot">${st.done ? '✓' : s.num}</div>
+      <div class="track-label">${s.title.replace(/Bước \d+: /,'')}</div>
+    </div>`;
+  }).join('');
+
+  detail.innerHTML = `
+    <div class="profile-header" style="margin-bottom:12px;">
+      <div class="profile-avatar">${p.name.split(' ').slice(-1)[0][0]}</div>
+      <div class="profile-info">
+        <h3>${p.name}</h3>
+        <p>${p.unit}</p>
+        <div class="profile-meta">
+          <div class="profile-meta-item">📅 Nộp: ${fmtDate(p.submitDate)}</div>
+          <div class="profile-meta-item">🎯 Bước ${p.currentStep}/6</div>
+        </div>
+      </div>
+      <div>${statusLabel(p.status)}</div>
+    </div>
+    <div class="process-track" style="margin:0 0 16px;">${trackHtml}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-info" onclick="showDetail('${p.id}')">👁 Xem & Cập nhật chi tiết</button>
+      <button class="btn btn-outline" onclick="openUpdateStatus('${p.id}')">🔄 Cập nhật trạng thái</button>
+    </div>
+  `;
+}
+
+// ============================================================
+// FORMS PAGE
+// ============================================================
+function renderForms() {
+  const grid = document.getElementById('forms-grid');
+  grid.innerHTML = FORMS_DATA.map((f, i) => `
+    <div class="form-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span class="form-card-num">${f.id}</span>
+        <span style="font-size:.75rem;color:var(--gray-500)">Bước ${f.step}</span>
+      </div>
+      <div class="form-card-name">${f.name}</div>
+      <div class="form-card-desc">${f.desc}</div>
+      <div class="form-card-actions">
+        <a href="${f.file}" download class="btn btn-sm btn-primary">⬇️ Tải xuống</a>
+        <button class="btn btn-sm btn-outline" onclick="showFormGuide(${i})">📖 Hướng dẫn</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showFormGuide(idx) {
+  const f = FORMS_DATA[idx];
+  document.getElementById('guide-title').textContent = `📋 Hướng dẫn — ${f.name}`;
+  document.getElementById('guide-body').innerHTML = `
+    <div style="margin-bottom:12px;">
+      <span class="form-card-num" style="display:inline-flex;">${f.id}</span>
+    </div>
+    ${f.guide}
+    <div class="divider"></div>
+    <a href="${f.file}" download class="btn btn-primary">⬇️ Tải mẫu về máy</a>
+  `;
+  openModal('modal-form-guide');
+}
+
+// ============================================================
+// REPORT PAGE
+// ============================================================
+function renderReport() {
+  const profiles = loadProfiles();
+  const counts = { new: 0, process: 0, done: 0, reject: 0 };
+  profiles.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
+
+  const now = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
+
+  const makeTable = (list) => {
+    if (!list.length) return '<p style="color:var(--gray-400);padding:12px 0;">Không có hồ sơ</p>';
+    return `<div class="table-wrapper"><table>
+      <thead><tr><th>#</th><th>Họ và Tên</th><th>Đơn vị</th><th>Ngày nộp</th><th>Bước</th><th>Trạng thái</th></tr></thead>
+      <tbody>${list.map((p,i)=>`
+        <tr>
+          <td>${i+1}</td>
+          <td><strong>${p.name}</strong></td>
+          <td>${p.unit}</td>
+          <td>${fmtDate(p.submitDate)}</td>
+          <td>Bước ${p.currentStep}</td>
+          <td>${statusLabel(p.status)}</td>
+        </tr>
+      `).join('')}</tbody>
+    </table></div>`;
+  };
+
+  document.getElementById('report-content').innerHTML = `
+    <div class="card report-section">
+      <div style="text-align:center;padding-bottom:12px;border-bottom:2px solid var(--gold);margin-bottom:18px;">
+        <div style="font-size:1.1rem;font-weight:800;color:var(--red-dark);">ĐẢNG CỘNG SẢN VIỆT NAM</div>
+        <div style="font-size:.9rem;color:var(--gray-600);margin-top:4px;">Chi bộ Hệ thống Thông tin Trường — HTTT</div>
+        <div style="font-size:1.2rem;font-weight:800;margin-top:10px;color:var(--gray-800);">BÁO CÁO TÌNH HÌNH PHÁT TRIỂN ĐẢNG VIÊN</div>
+        <div style="font-size:.85rem;color:var(--gray-500);">Ngày báo cáo: ${now}</div>
+      </div>
+
+      <div class="report-section">
+        <h3>📊 I. Tổng quan Số liệu</h3>
+        <div class="report-stat-row">
+          <div class="report-stat-box">
+            <div class="rsb-num text-red">${profiles.length}</div>
+            <div class="rsb-label">Tổng hồ sơ</div>
+          </div>
+          <div class="report-stat-box">
+            <div class="rsb-num" style="color:var(--gold-dark)">${counts.new}</div>
+            <div class="rsb-label">Mới nộp</div>
+          </div>
+          <div class="report-stat-box">
+            <div class="rsb-num" style="color:var(--info)">${counts.process}</div>
+            <div class="rsb-label">Đang xử lý</div>
+          </div>
+          <div class="report-stat-box">
+            <div class="rsb-num text-success">${counts.done}</div>
+            <div class="rsb-label">Hoàn thành</div>
+          </div>
+          <div class="report-stat-box">
+            <div class="rsb-num text-red">${counts.reject}</div>
+            <div class="rsb-label">Từ chối</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <h3>🆕 II. Hồ sơ Mới nộp</h3>
+        ${makeTable(profiles.filter(p=>p.status==='new'))}
+      </div>
+
+      <div class="report-section">
+        <h3>⏳ III. Hồ sơ Đang xử lý</h3>
+        ${makeTable(profiles.filter(p=>p.status==='process'))}
+      </div>
+
+      <div class="report-section">
+        <h3>✅ IV. Hồ sơ Đã hoàn thành</h3>
+        ${makeTable(profiles.filter(p=>p.status==='done'))}
+      </div>
+
+      <div class="report-section">
+        <h3>❌ V. Hồ sơ Từ chối / Tạm dừng</h3>
+        ${makeTable(profiles.filter(p=>p.status==='reject'))}
+      </div>
+
+      <div style="margin-top:32px;display:flex;justify-content:space-between;padding-top:16px;border-top:1px solid var(--gray-200);">
+        <div style="text-align:center;">
+          <div style="font-size:.85rem;font-weight:700">Người lập báo cáo</div>
+          <div style="font-size:.78rem;color:var(--gray-500);margin-top:4px;">(Ký, ghi rõ họ tên)</div>
+          <div style="height:60px;"></div>
+          <div style="font-size:.85rem;font-weight:700">……………………………</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:.85rem;font-weight:700">Bí thư Chi bộ</div>
+          <div style="font-size:.78rem;color:var(--gray-500);margin-top:4px;">(Ký, ghi rõ họ tên, đóng dấu)</div>
+          <div style="height:60px;"></div>
+          <div style="font-size:.85rem;font-weight:700">……………………………</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// EXPORT (đơn giản — CSV)
+// ============================================================
+function exportReport() {
+  const profiles = loadProfiles();
+  const statusMap = { new: 'Mới nộp', process: 'Đang xử lý', done: 'Hoàn thành', reject: 'Từ chối' };
+  const rows = [
+    ['STT','Họ và Tên','Ngày sinh','Giới tính','Đơn vị','Ngày nộp','Bước','Trạng thái','Ghi chú']
+  ];
+  profiles.forEach((p, i) => {
+    rows.push([
+      i+1, p.name, fmtDate(p.dob), p.gender, p.unit,
+      fmtDate(p.submitDate), 'Bước ' + p.currentStep,
+      statusMap[p.status] || p.status, p.note || ''
+    ]);
+  });
+  const csv = '\uFEFF' + rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `BaoCao_ChiBo_HTTT_${today()}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('Đã xuất file CSV!', 'success');
+}
+
+// ============================================================
+// CLOCK
+// ============================================================
+function updateClock() {
+  const el = document.getElementById('sf-time');
+  if (!el) return;
+  el.textContent = new Date().toLocaleString('vi-VN', {
+    weekday: 'short', day:'2-digit', month:'2-digit', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+(function init() {
+  seedSampleData();
+  updateClock();
+  setInterval(updateClock, 30000);
+  renderDashboard();
+})();
+</script>
+</body>
+</html>
